@@ -22,6 +22,11 @@ const TripCountdown = ({ serverDate }) => {
       const calculateCountdown = () => {
         const now = new Date(serverDate);
         const trip = new Date(tripDate);
+        
+        // Reset hours to midnight for both dates to ensure accurate day calculation
+        now.setHours(0, 0, 0, 0);
+        trip.setHours(0, 0, 0, 0);
+        
         const timeDiff = trip.getTime() - now.getTime();
         const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
         
@@ -35,8 +40,8 @@ const TripCountdown = ({ serverDate }) => {
 
       calculateCountdown();
 
-      // Set up an interval to recalculate the countdown every day
-      const intervalId = setInterval(calculateCountdown, 24 * 60 * 60 * 1000);
+      // Set up an interval to recalculate the countdown every hour
+      const intervalId = setInterval(calculateCountdown, 60 * 60 * 1000);
 
       return () => clearInterval(intervalId);
     }
