@@ -21,7 +21,9 @@ const TripCountdown = ({ serverDate }) => {
 
       const calculateCountdown = () => {
         const now = new Date(serverDate);
-        const trip = new Date(tripDate);
+        // Ensure correct parsing of the trip date
+        const [year, month, day] = tripDate.split('-').map(Number);
+        const trip = new Date(year, month - 1, day); // month is 0-indexed in JS Date
         
         // Reset hours to midnight for both dates to ensure accurate day calculation
         now.setHours(0, 0, 0, 0);
@@ -34,7 +36,7 @@ const TripCountdown = ({ serverDate }) => {
 
         // Assuming a maximum countdown of 365 days
         const maxDays = 365;
-        const calculatedProgress = Math.max(0, Math.min(100, ((maxDays - daysDiff) / maxDays) * 100));
+        const calculatedProgress = Math.max(0, Math.min(100, ((maxDays - Math.max(0, daysDiff)) / maxDays) * 100));
         setProgress(calculatedProgress);
       };
 
