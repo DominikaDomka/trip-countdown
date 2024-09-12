@@ -21,9 +21,12 @@ const TripCountdown = ({ serverDate }) => {
 
       const calculateCountdown = () => {
         const now = new Date(serverDate);
-        // Ensure correct parsing of the trip date
-        const [year, month, day] = tripDate.split('-').map(Number);
-        const trip = new Date(year, month - 1, day); // month is 0-indexed in JS Date
+        const trip = new Date(tripDate);
+        
+        console.log('Server date:', serverDate);
+        console.log('Trip date:', tripDate);
+        console.log('Parsed now:', now);
+        console.log('Parsed trip:', trip);
         
         // Reset hours to midnight for both dates to ensure accurate day calculation
         now.setHours(0, 0, 0, 0);
@@ -31,6 +34,8 @@ const TripCountdown = ({ serverDate }) => {
         
         const timeDiff = trip.getTime() - now.getTime();
         const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        
+        console.log('Days difference:', daysDiff);
         
         setDaysLeft(daysDiff);
 
