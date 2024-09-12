@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from 'react';
 
-const TripCountdown = () => {
+const TripCountdown = ({ serverDate }) => {
   const [tripDate, setTripDate] = useState('');
+  const [tripLocation, setTripLocation] = useState('');
   const [daysLeft, setDaysLeft] = useState(null);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    // Load saved data from localStorage on component mount
+    const savedDate = localStorage.getItem('tripDate');
+    const savedLocation = localStorage.getItem('tripLocation');
+    if (savedDate) setTripDate(savedDate);
+    if (savedLocation) setTripLocation(savedLocation);
+  }, []);
+
+  useEffect(() => {
     if (tripDate) {
-      const intervalId = setInterval(() => {
-        const now = new Date();
+      // Save date to localStorage whenever it changes
+      localStorage.setItem('tripDate', tripDate);
+
+      const calculateCountdown = () => {
+        const now = new Date(serverDate);
         const trip = new Date(tripDate);
         const timeDiff = trip.getTime() - now.getTime();
         const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
@@ -19,14 +31,25 @@ const TripCountdown = () => {
         const maxDays = 365;
         const calculatedProgress = Math.max(0, Math.min(100, ((maxDays - daysDiff) / maxDays) * 100));
         setProgress(calculatedProgress);
-      }, 1000);
+      };
+
+      calculateCountdown();
+
+      // Set up an interval to recalculate the countdown every day
+      const intervalId = setInterval(calculateCountdown, 24 * 60 * 60 * 1000);
 
       return () => clearInterval(intervalId);
     }
-  }, [tripDate]);
+  }, [tripDate, serverDate]);
 
   const handleDateChange = (e) => {
     setTripDate(e.target.value);
+  };
+
+  const handleLocationChange = (e) => {
+    const newLocation = e.target.value;
+    setTripLocation(newLocation);
+    localStorage.setItem('tripLocation', newLocation);
   };
 
   return (
@@ -36,8 +59,21 @@ const TripCountdown = () => {
       </div>
       <div className="space-y-5 p-6 border border-gray-200 rounded-b-lg">
         <div className="space-y-2">
+          <label htmlFor="trip-location" className="text-sm font-medium text-green-800">
+            Where are you going?
+          </label>
+          <input
+            id="trip-location"
+            type="text"
+            value={tripLocation}
+            onChange={handleLocationChange}
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            placeholder="Enter trip location"
+          />
+        </div>
+        <div className="space-y-2">
           <label htmlFor="trip-date" className="text-sm font-medium text-green-800">
-            Date of your next trip:
+            Date of your trip:
           </label>
           <input
             id="trip-date"
@@ -51,10 +87,10 @@ const TripCountdown = () => {
           <div className="space-y-3">
             <p className="text-lg font-medium text-green-800">
               {daysLeft > 0 
-                ? `${daysLeft} days until your trip!` 
+                ? `${daysLeft} days until your trip${tripLocation ? ` to ${tripLocation}` : ''}!` 
                 : daysLeft === 0 
-                  ? "Your trip is today!" 
-                  : "Your trip date is in the past."}
+                  ? `Your trip${tripLocation ? ` to ${tripLocation}` : ''} is today!` 
+                  : `Your trip${tripLocation ? ` to ${tripLocation}` : ''} date is in the past.`}
             </p>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div 
