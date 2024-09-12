@@ -6,6 +6,11 @@ const TripCountdown = ({ serverDate }) => {
   const [daysLeft, setDaysLeft] = useState(null);
   const [progress, setProgress] = useState(0);
 
+  // Calculate max date (5 years from now)
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() + 5);
+  const maxDateString = maxDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
   useEffect(() => {
     // Load saved data from localStorage on component mount
     const savedDate = localStorage.getItem('tripDate');
@@ -23,20 +28,12 @@ const TripCountdown = ({ serverDate }) => {
         const now = serverDate ? new Date(serverDate) : new Date(); // Use current date if serverDate is undefined
         const trip = new Date(tripDate);
         
-        console.log('Server date:', serverDate);
-        console.log('Current date:', now.toISOString());
-        console.log('Trip date:', tripDate);
-        console.log('Parsed now:', now);
-        console.log('Parsed trip:', trip);
-        
         // Reset hours to midnight for both dates to ensure accurate day calculation
         now.setHours(0, 0, 0, 0);
         trip.setHours(0, 0, 0, 0);
         
         const timeDiff = trip.getTime() - now.getTime();
         const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        
-        console.log('Days difference:', daysDiff);
         
         setDaysLeft(daysDiff);
 
@@ -93,6 +90,8 @@ const TripCountdown = ({ serverDate }) => {
             type="date"
             value={tripDate}
             onChange={handleDateChange}
+            min={new Date().toISOString().split('T')[0]}
+            max={maxDateString}
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
