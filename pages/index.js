@@ -1,3 +1,4 @@
+// Trip Countdown App
 import TripCountdown from '../components/TripCountdown'
 
 export default function Home() {
