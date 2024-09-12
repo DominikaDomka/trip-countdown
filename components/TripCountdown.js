@@ -20,10 +20,11 @@ const TripCountdown = ({ serverDate }) => {
       localStorage.setItem('tripDate', tripDate);
 
       const calculateCountdown = () => {
-        const now = new Date(serverDate);
+        const now = serverDate ? new Date(serverDate) : new Date(); // Use current date if serverDate is undefined
         const trip = new Date(tripDate);
         
         console.log('Server date:', serverDate);
+        console.log('Current date:', now.toISOString());
         console.log('Trip date:', tripDate);
         console.log('Parsed now:', now);
         console.log('Parsed trip:', trip);
